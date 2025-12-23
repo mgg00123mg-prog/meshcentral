@@ -73,11 +73,17 @@ config.settings.newAccounts = true;
 config.settings.cookieIpCheck = false;
 config.settings.cookieEncoding = "hex";
 config.settings.webRTC = false;
-config.settings.compression = true;
-config.settings.wsCompression = true;
-config.settings.AmtScanner = false;  // AMTスキャナー無効
-config.settings.AmtManager = false;  // AMTマネージャー無効
+config.settings.compression = false;    // 互換性向上のため無効
+config.settings.wsCompression = false;  // 互換性向上のため無効
+config.settings.AmtScanner = false;
+config.settings.AmtManager = false;
 config.settings.noUsers = false;
+config.settings.allowHighQualityDesktop = true;
+config.settings.agentPing = 60;
+config.settings.agentPong = 60;
+config.settings.browserPing = 60;
+config.settings.browserPong = 60;
+config.settings.agentIdleTimeout = 150;
 
 // セッションキー（既存があれば維持、なければ新規）
 if (!config.settings.sessionKey || config.settings.sessionKey.includes('PLACEHOLDER')) {

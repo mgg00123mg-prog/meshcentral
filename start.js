@@ -32,13 +32,32 @@ if (!fs.existsSync(dataDir)) {
 // 設定読み込みまたは作成
 let config;
 
-if (fs.existsSync(configPath)) {
+// 強制リセットフラグ（環境変数で制御）
+const FORCE_RESET = process.env.FORCE_CONFIG_RESET === 'true';
+
+if (FORCE_RESET) {
+    console.log('[MeshCentral Starter] FORCE_CONFIG_RESET enabled, deleting old config...');
+    try {
+        if (fs.existsSync(configPath)) {
+            fs.unlinkSync(configPath);
+        }
+    } catch (e) {
+        console.log('[MeshCentral Starter] Could not delete config:', e.message);
+    }
+}
+
+if (fs.existsSync(configPath) && !FORCE_RESET) {
     console.log('[MeshCentral Starter] Loading existing config...');
     try {
         config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        console.log('[MeshCentral Starter] Config loaded successfully');
     } catch (e) {
-        console.log('[MeshCentral Starter] Config parse error, recreating...');
+        console.log('[MeshCentral Starter] Config parse error, recreating...', e.message);
         config = null;
+        // 破損したファイルを削除
+        try {
+            fs.unlinkSync(configPath);
+        } catch (err) {}
     }
 }
 

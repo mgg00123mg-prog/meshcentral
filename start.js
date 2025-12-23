@@ -101,6 +101,11 @@ config.domains[""].novnc = true;
 config.domains[""].mstsc = true;
 config.domains[""].ssh = true;
 
+// API有効化
+config.domains[""].apikeys = true;  // APIキー機能有効
+config.settings.allowLoginToken = true;
+config.settings.maxInvalidLogin = { time: 10, count: 100 };  // API用に緩和
+
 // 設定保存
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 console.log('[MeshCentral Starter] Config saved.');

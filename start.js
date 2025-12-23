@@ -111,6 +111,12 @@ config.settings.userAllowedIP = "0.0.0.0/0";  // API接続を全IPから許可
 config.domains[""].userQuota = 1048576;
 config.domains[""].meshQuota = 1048576;
 
+// 不正なloginKeyを削除（過去の設定クリーンアップ）
+if (config.domains[""].loginKey) {
+    delete config.domains[""].loginKey;
+    console.log('[MeshCentral Starter] Removed invalid loginKey from config');
+}
+
 // 設定保存
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 console.log('[MeshCentral Starter] Config saved.');

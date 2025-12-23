@@ -110,7 +110,6 @@ config.settings.userAllowedIP = "0.0.0.0/0";  // API接続を全IPから許可
 // ドメイン別API設定
 config.domains[""].userQuota = 1048576;
 config.domains[""].meshQuota = 1048576;
-config.domains[""].loginKey = "~t:7eLkNoMAbtwTEuFYtPCNs8rp7wA0Y81CcHpN";  // 固定ログインキー
 
 // 設定保存
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));

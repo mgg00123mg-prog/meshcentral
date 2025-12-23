@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json",
   "settings": {
-    "cert": "meshcentral.net8.app",
+    "cert": "meshcentral-uz6d.onrender.com",
     "port": 443,
     "aliasPort": 443,
-    "redirPort": 80,
+    "redirPort": 0,
     "agentPort": 443,
     "agentAliasPort": 443,
-    "tlsOffload": false,
+    "tlsOffload": "0.0.0.0/0",
     "allowLoginToken": true,
     "allowFraming": true,
     "webRTC": true,
@@ -15,19 +15,19 @@
     "wsCompression": true,
     "agentCoreDump": false,
     "exactPorts": false,
-    "newAccounts": false,
+    "newAccounts": true,
     "newAccountsUserGroups": [],
     "userNameIsEmail": false,
     "sessionKey": "MySessionKey123!@#CHANGE_THIS",
-    "sessionSameSite": "strict"
+    "sessionSameSite": "none"
   },
   "domains": {
     "": {
       "title": "NET8 Remote Management",
       "title2": "41 Windows PC Manager",
-      "newAccounts": false,
+      "newAccounts": true,
       "userNameIsEmail": false,
-      "certUrl": "https://meshcentral.net8.app/",
+      "certUrl": "https://meshcentral-uz6d.onrender.com/",
       "geoLocation": true,
       "novnc": true,
       "mstsc": true,

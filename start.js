@@ -1,113 +1,139 @@
 /**
  * MeshCentral Render.com Starter
- * 環境変数からポートを取得し、config.jsonを動的に更新して起動
+ * Diskマウント対応 + リバースプロキシ対応
  */
 
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-// Render環境変数からポート取得
+// 環境変数
 const PORT = process.env.PORT || 10000;
-const RENDER_EXTERNAL_HOSTNAME = process.env.RENDER_EXTERNAL_HOSTNAME || 'meshcentral-uz6d.onrender.com';
+const DOMAIN = process.env.RENDER_EXTERNAL_HOSTNAME || 'meshcentral-uz6d.onrender.com';
+const SESSION_KEY = process.env.SESSION_KEY || 'net8meshcentral2024prod' + Date.now();
 
+console.log('='.repeat(50));
+console.log('[MeshCentral Starter] Initializing...');
 console.log(`[MeshCentral Starter] PORT: ${PORT}`);
-console.log(`[MeshCentral Starter] DOMAIN: ${RENDER_EXTERNAL_HOSTNAME}`);
+console.log(`[MeshCentral Starter] DOMAIN: ${DOMAIN}`);
+console.log('='.repeat(50));
 
-// config.jsonのパス
-const configPath = path.join(__dirname, 'meshcentral-data', 'config.json');
+// パス設定
+const dataDir = path.join(__dirname, 'meshcentral-data');
+const configPath = path.join(dataDir, 'config.json');
+const templatePath = path.join(__dirname, 'config.template.json');
 
-// デフォルト設定
-const defaultConfig = {
-    "$schema": "https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json",
-    "settings": {
-        "cert": RENDER_EXTERNAL_HOSTNAME,
-        "port": parseInt(PORT),
-        "aliasPort": 443,
-        "redirPort": 0,
-        "agentPort": parseInt(PORT),
-        "agentAliasPort": 443,
-        "tlsOffload": "0.0.0.0/0",
-        "allowLoginToken": true,
-        "allowFraming": true,
-        "webRTC": true,
-        "compression": true,
-        "wsCompression": true,
-        "agentCoreDump": false,
-        "exactPorts": false,
-        "newAccounts": true,
-        "newAccountsUserGroups": [],
-        "userNameIsEmail": false,
-        "sessionKey": process.env.SESSION_KEY || "net8meshcentral2024secretkey32chars",
-        "sessionSameSite": "none"
-    },
-    "domains": {
-        "": {
-            "title": "NET8 Remote Management",
-            "title2": "41 Windows PC Manager",
-            "newAccounts": true,
-            "userNameIsEmail": false,
-            "certUrl": `https://${RENDER_EXTERNAL_HOSTNAME}/`,
-            "geoLocation": true,
-            "novnc": true,
-            "mstsc": true,
-            "ssh": true,
-            "agentInviteCodes": true,
-            "deviceMeshRouterLinks": {
-                "rdp": true,
-                "ssh": true,
-                "scp": true
-            },
-            "footer": "NET8 Remote Management System",
-            "myServer": {
-                "Backup": true,
-                "Restore": true,
-                "Upgrade": true,
-                "ErrorLog": true,
-                "Console": true,
-                "Trace": true
-            }
-        }
-    }
-};
-
-// 設定ファイル読み込みまたは作成
-let config;
-try {
-    config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    console.log('[MeshCentral Starter] Existing config loaded');
-
-    // 重要な設定を更新
-    config.settings.port = parseInt(PORT);
-    config.settings.cert = RENDER_EXTERNAL_HOSTNAME;
-    config.settings.tlsOffload = "0.0.0.0/0";
-    config.settings.sessionSameSite = "none";
-    config.domains[""].certUrl = `https://${RENDER_EXTERNAL_HOSTNAME}/`;
-
-} catch (e) {
-    console.log('[MeshCentral Starter] Creating default config...');
-    config = defaultConfig;
+// データディレクトリ作成
+if (!fs.existsSync(dataDir)) {
+    console.log('[MeshCentral Starter] Creating data directory...');
+    fs.mkdirSync(dataDir, { recursive: true });
 }
 
+// 設定読み込みまたは作成
+let config;
+
+if (fs.existsSync(configPath)) {
+    console.log('[MeshCentral Starter] Loading existing config...');
+    try {
+        config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    } catch (e) {
+        console.log('[MeshCentral Starter] Config parse error, recreating...');
+        config = null;
+    }
+}
+
+if (!config) {
+    console.log('[MeshCentral Starter] Creating new config from template...');
+    try {
+        config = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
+    } catch (e) {
+        console.log('[MeshCentral Starter] Template not found, using defaults...');
+        config = {
+            settings: {},
+            domains: { "": {} }
+        };
+    }
+}
+
+// 必須設定を強制適用（毎回）
+config.settings = config.settings || {};
+config.settings.port = parseInt(PORT);
+config.settings.aliasPort = 443;
+config.settings.redirPort = 0;
+config.settings.agentPort = parseInt(PORT);
+config.settings.agentAliasPort = 443;
+config.settings.cert = DOMAIN;
+config.settings.tlsOffload = true;
+config.settings.trustedProxy = "0.0.0.0/0";
+config.settings.WANonly = true;
+config.settings.allowLoginToken = true;
+config.settings.allowFraming = true;
+config.settings.exactPorts = true;
+config.settings.newAccounts = true;
+config.settings.cookieIpCheck = false;
+config.settings.cookieEncoding = "hex";
+config.settings.webRTC = false;
+config.settings.compression = true;
+config.settings.wsCompression = true;
+
+// セッションキー（既存があれば維持、なければ新規）
+if (!config.settings.sessionKey || config.settings.sessionKey.includes('PLACEHOLDER')) {
+    config.settings.sessionKey = SESSION_KEY;
+}
+
+// ドメイン設定
+config.domains = config.domains || {};
+config.domains[""] = config.domains[""] || {};
+config.domains[""].title = "NET8 Remote Management";
+config.domains[""].title2 = "41 Windows PC Manager";
+config.domains[""].newAccounts = true;
+config.domains[""].minify = true;
+config.domains[""].novnc = true;
+config.domains[""].mstsc = true;
+config.domains[""].ssh = true;
+
 // 設定保存
-fs.mkdirSync(path.dirname(configPath), { recursive: true });
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-console.log('[MeshCentral Starter] Config saved:', configPath);
-console.log('[MeshCentral Starter] Settings:', JSON.stringify(config.settings, null, 2));
+console.log('[MeshCentral Starter] Config saved.');
+console.log('[MeshCentral Starter] Key settings:');
+console.log(`  - port: ${config.settings.port}`);
+console.log(`  - cert: ${config.settings.cert}`);
+console.log(`  - tlsOffload: ${config.settings.tlsOffload}`);
+console.log(`  - trustedProxy: ${config.settings.trustedProxy}`);
+console.log(`  - WANonly: ${config.settings.WANonly}`);
+console.log(`  - cookieIpCheck: ${config.settings.cookieIpCheck}`);
 
 // MeshCentral起動
+console.log('='.repeat(50));
 console.log('[MeshCentral Starter] Starting MeshCentral...');
+console.log('='.repeat(50));
+
 const meshcentral = spawn('node', ['node_modules/meshcentral'], {
     stdio: 'inherit',
-    cwd: __dirname
+    cwd: __dirname,
+    env: {
+        ...process.env,
+        NODE_ENV: 'production'
+    }
 });
 
 meshcentral.on('error', (err) => {
-    console.error('[MeshCentral Starter] Error:', err);
+    console.error('[MeshCentral Starter] Failed to start:', err);
     process.exit(1);
 });
 
 meshcentral.on('exit', (code) => {
     console.log(`[MeshCentral Starter] Exited with code: ${code}`);
-    process.exit(code);
+    process.exit(code || 0);
+});
+
+// シグナルハンドリング
+process.on('SIGTERM', () => {
+    console.log('[MeshCentral Starter] SIGTERM received, shutting down...');
+    meshcentral.kill('SIGTERM');
+});
+
+process.on('SIGINT', () => {
+    console.log('[MeshCentral Starter] SIGINT received, shutting down...');
+    meshcentral.kill('SIGINT');
 });

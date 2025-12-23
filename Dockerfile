@@ -1,4 +1,4 @@
-# MeshCentral Docker Image for Railway
+# MeshCentral Docker Image for Render.com
 FROM node:20-alpine
 
 # Install dependencies
@@ -21,17 +21,17 @@ RUN npm install --production
 
 # Copy application files
 COPY start.js ./
-COPY config.json ./meshcentral-data/config.json
+COPY config.template.json ./config.template.json
 
 # Set environment
 ENV NODE_ENV=production
 
-# Expose port (Railway uses PORT env variable)
-EXPOSE 8080
+# Expose port
+EXPOSE 10000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-8080}/ || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=5 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-10000}/ || exit 1
 
-# Start MeshCentral via custom starter
+# Start MeshCentral
 CMD ["node", "start.js"]

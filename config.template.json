@@ -1,25 +1,27 @@
 {
   "$schema": "https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json",
   "settings": {
-    "cert": "meshcentral-uz6d.onrender.com",
-    "port": 443,
+    "mongoDb": null,
+    "WANonly": true,
+    "sessionKey": "SESSION_KEY_PLACEHOLDER",
+    "port": 10000,
     "aliasPort": 443,
     "redirPort": 0,
-    "agentPort": 443,
+    "agentPort": 10000,
     "agentAliasPort": 443,
-    "tlsOffload": "0.0.0.0/0",
+    "cert": "DOMAIN_PLACEHOLDER",
+    "tlsOffload": true,
+    "trustedProxy": "0.0.0.0/0",
     "allowLoginToken": true,
     "allowFraming": true,
-    "webRTC": true,
+    "webRTC": false,
     "compression": true,
     "wsCompression": true,
     "agentCoreDump": false,
-    "exactPorts": false,
+    "exactPorts": true,
     "newAccounts": true,
-    "newAccountsUserGroups": [],
-    "userNameIsEmail": false,
-    "sessionKey": "MySessionKey123!@#CHANGE_THIS",
-    "sessionSameSite": "none"
+    "cookieIpCheck": false,
+    "cookieEncoding": "hex"
   },
   "domains": {
     "": {
@@ -27,8 +29,7 @@
       "title2": "41 Windows PC Manager",
       "newAccounts": true,
       "userNameIsEmail": false,
-      "certUrl": "https://meshcentral-uz6d.onrender.com/",
-      "geoLocation": true,
+      "minify": true,
       "novnc": true,
       "mstsc": true,
       "ssh": true,
@@ -38,15 +39,7 @@
         "ssh": true,
         "scp": true
       },
-      "footer": "NET8 Remote Management System",
-      "myServer": {
-        "Backup": true,
-        "Restore": true,
-        "Upgrade": true,
-        "ErrorLog": true,
-        "Console": true,
-        "Trace": true
-      }
+      "footer": "NET8 Remote Management System"
     }
   }
 }

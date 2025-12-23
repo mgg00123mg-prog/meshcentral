@@ -102,9 +102,15 @@ config.domains[""].mstsc = true;
 config.domains[""].ssh = true;
 
 // API有効化
-config.domains[""].apikeys = true;  // APIキー機能有効
 config.settings.allowLoginToken = true;
-config.settings.maxInvalidLogin = { time: 10, count: 100 };  // API用に緩和
+config.settings.allowHighQualityDesktop = true;
+config.settings.maxInvalidLogin = { time: 10, count: 100 };
+config.settings.userAllowedIP = "0.0.0.0/0";  // API接続を全IPから許可
+
+// ドメイン別API設定
+config.domains[""].userQuota = 1048576;
+config.domains[""].meshQuota = 1048576;
+config.domains[""].loginKey = "~t:7eLkNoMAbtwTEuFYtPCNs8rp7wA0Y81CcHpN";  // 固定ログインキー
 
 // 設定保存
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));

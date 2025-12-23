@@ -60,7 +60,7 @@ config.settings = config.settings || {};
 config.settings.port = parseInt(PORT);
 config.settings.aliasPort = 443;
 config.settings.redirPort = 0;
-config.settings.agentPort = parseInt(PORT);
+config.settings.agentPort = 0;  // メインポートと同じ
 config.settings.agentAliasPort = 443;
 config.settings.cert = DOMAIN;
 config.settings.tlsOffload = true;
@@ -75,6 +75,9 @@ config.settings.cookieEncoding = "hex";
 config.settings.webRTC = false;
 config.settings.compression = true;
 config.settings.wsCompression = true;
+config.settings.AmtScanner = false;  // AMTスキャナー無効
+config.settings.AmtManager = false;  // AMTマネージャー無効
+config.settings.noUsers = false;
 
 // セッションキー（既存があれば維持、なければ新規）
 if (!config.settings.sessionKey || config.settings.sessionKey.includes('PLACEHOLDER')) {

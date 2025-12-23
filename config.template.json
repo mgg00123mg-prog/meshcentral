@@ -7,7 +7,7 @@
     "port": 10000,
     "aliasPort": 443,
     "redirPort": 0,
-    "agentPort": 10000,
+    "agentPort": 0,
     "agentAliasPort": 443,
     "cert": "DOMAIN_PLACEHOLDER",
     "tlsOffload": true,
@@ -21,7 +21,11 @@
     "exactPorts": true,
     "newAccounts": true,
     "cookieIpCheck": false,
-    "cookieEncoding": "hex"
+    "cookieEncoding": "hex",
+    "AmtScanner": false,
+    "AmtManager": false,
+    "LANonly": false,
+    "noUsers": false
   },
   "domains": {
     "": {

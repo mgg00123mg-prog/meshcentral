@@ -36,13 +36,30 @@ let config;
 const FORCE_RESET = process.env.FORCE_CONFIG_RESET === 'true';
 
 if (FORCE_RESET) {
-    console.log('[MeshCentral Starter] FORCE_CONFIG_RESET enabled, deleting old config...');
+    console.log('[MeshCentral Starter] FORCE_CONFIG_RESET enabled, deleting old config and certificates...');
+
+    // config.json削除
     try {
         if (fs.existsSync(configPath)) {
             fs.unlinkSync(configPath);
+            console.log('[MeshCentral Starter] Deleted config.json');
         }
     } catch (e) {
         console.log('[MeshCentral Starter] Could not delete config:', e.message);
+    }
+
+    // 証明書ファイル削除（エージェント接続問題を解決）
+    try {
+        const files = fs.readdirSync(dataDir);
+        for (const file of files) {
+            if (file.endsWith('.crt') || file.endsWith('.key') || file === 'meshcentral.db') {
+                const filePath = path.join(dataDir, file);
+                fs.unlinkSync(filePath);
+                console.log(`[MeshCentral Starter] Deleted: ${file}`);
+            }
+        }
+    } catch (e) {
+        console.log('[MeshCentral Starter] Could not delete certificates:', e.message);
     }
 }
 

@@ -1,5 +1,35 @@
 # MeshCentral リモート管理システム構築状況
 
+## 次回再開時のコマンド（コピペでOK）
+
+### Claude Codeに伝える内容
+```
+MeshCentralの続きをやりたい。
+/Users/kotarokashiwai/meshcentral/DEVELOPMENT_STATUS.md を読んで状況を把握して。
+
+前回の問題:
+- 新しいエージェント（192.168.128.54）がサーバーに接続できない
+- `MeshAgent.exe run`で詳細ログを確認する予定だった
+
+まず `MeshAgent.exe run` の結果を確認して、問題を解決してください。
+```
+
+### Windows PC側で最初に実行するコマンド
+```cmd
+:: エージェントの詳細ログを表示
+net stop "Mesh Agent"
+"C:\Program Files\Mesh Agent\MeshAgent.exe" run
+```
+
+### Render.comログ確認
+1. https://dashboard.render.com/ にログイン
+2. meshcentralサービス → Logs タブ
+
+### MeshCentral Web画面
+- URL: https://meshcentral-uz6d.onrender.com/
+
+---
+
 ## 目的
 - 41台のWindows PCを一括リモート管理
 - Chrome Remote Desktopを1回だけ使ってMeshAgentをインストール
